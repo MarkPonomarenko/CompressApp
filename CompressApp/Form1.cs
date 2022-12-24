@@ -32,6 +32,7 @@ namespace CompressApp
         public Form1()
         {
             InitializeComponent();
+            selectedAlgorithmButton = arithmeticAlgButton;
         }
         private void inputFilePickButton_Click(object sender, EventArgs e)
         {
