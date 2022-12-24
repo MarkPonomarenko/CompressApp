@@ -146,7 +146,6 @@ namespace CompressAlgorithmLib
             low = 0L;
             high = maxRegisterValue;
             followingBits = 0L;
-            counter += 20;
         }
         public void finishEncoding()
         {

@@ -21,7 +21,7 @@ namespace CompressAlgorithmLib
         private int[] prefixArr = new int[arrLimit]; //prefix table
         private int[] symbolArr = new int[arrLimit]; //character table
 
-        private byte buf; //bit buffer to temporarily store bytes read from the files
+        private ulong buf; //bit buffer to temporarily store bytes read from the files
         private int counter; //counter for knowing how many bits are in the bit buffer
 
         private void init() 
@@ -115,7 +115,7 @@ namespace CompressAlgorithmLib
 
         private void writeCode(Stream outputDataStream, int code)
         {
-            buf |= (byte)(code << (32 - bitsLimit - counter)); 
+            buf |= (ulong)(code << (32 - bitsLimit - counter)); 
             counter += bitsLimit;
 
             while (counter >= 8)
@@ -138,14 +138,14 @@ namespace CompressAlgorithmLib
                 inputDataStream = new FileStream(infile, FileMode.Open);
                 outputDataStream = new FileStream(outfile, FileMode.Create);
                 int nextCode = 256;
-                int newCode, previousCode;
+                int newCode, oldCode;
                 byte symbol;
                 int code, counter;
                 byte[] decodeArr = new byte[arrLimit];
 
-                previousCode = readCode(inputDataStream);
-                symbol = (byte)previousCode;
-                outputDataStream.WriteByte((byte)previousCode); 
+                oldCode = readCode(inputDataStream);
+                symbol = (byte)oldCode;
+                outputDataStream.WriteByte((byte)oldCode); 
 
                 newCode = readCode(inputDataStream);
 
@@ -155,7 +155,7 @@ namespace CompressAlgorithmLib
                     { 
                         decodeArr[0] = symbol;
                         counter = 1;
-                        code = previousCode;
+                        code = oldCode;
                     }
                     else
                     {
@@ -183,12 +183,12 @@ namespace CompressAlgorithmLib
 
                     if (nextCode <= codeMax) 
                     {
-                        prefixArr[nextCode] = previousCode;
+                        prefixArr[nextCode] = oldCode;
                         symbolArr[nextCode] = symbol;
                         ++nextCode;
                     }
 
-                    previousCode = newCode;
+                    oldCode = newCode;
 
                     newCode = readCode(inputDataStream);
                 }
@@ -219,7 +219,7 @@ namespace CompressAlgorithmLib
 
             while (counter <= 24)
             {
-                buf |= (byte)(inputDataStream.ReadByte() << (24 - counter));
+                buf |= (ulong)inputDataStream.ReadByte() << (24 - counter);
                 counter += 8;
             }
 
